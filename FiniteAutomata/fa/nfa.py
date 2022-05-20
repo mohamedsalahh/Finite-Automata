@@ -37,6 +37,10 @@ class NFA:
     def __iter__(self):
         for state, transitions in self.transitions_table.items():
             yield (state, transitions)
+    
+    def copy(self) -> NFA:
+        """Create a deep copy of the NFA."""
+        return self.__class__(self.regex.expression)
 
     @staticmethod
     def _remove_spaces_from_string(string: str) -> str:

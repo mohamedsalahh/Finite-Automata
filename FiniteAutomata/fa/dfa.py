@@ -1,4 +1,5 @@
 import copy
+from os import stat
 from typing import Tuple, TypeVar
 from AlgebraicExpressionParser import Expression
 from FiniteAutomata.exceptions.Exceptions import *
@@ -12,7 +13,7 @@ class DFA:
     def __init__(self, *, regex: str = None, nfa: NFA = None) -> None:
 
         if nfa:
-            self.nfa = nfa
+            self.nfa = nfa.copy()
         elif regex:
             self.regex = regex
         else:
@@ -46,6 +47,10 @@ class DFA:
     def __iter__(self):
         for state, transitions in self.transitions_table.items():
             yield (state, transitions)
+
+    def copy(self) -> DFA:
+        """Create a deep copy of the DFA."""
+        return self.__class__(nfa = self.nfa)
 
     def _convert_NFA_To_DFA(self) -> None:
         """Convert NFA transitions to DFA transitions"""
@@ -98,6 +103,69 @@ class DFA:
         self.transitions_table = copy.deepcopy(DFA_Transitions)
         self.states = sorted(DFA_Transitions.keys())
         self.symbols = self.regex.get_operands()
+
+    def minimize(self) -> DFA:
+        """Minimize the DFA states using Hopcroft's algorithm"""
+        equivalence_classes = []
+        equivalence_classes.append(copy.copy(self.final_states))
+        equivalence_classes.append(set(self.states).difference(self.final_states))
+
+        while True:    
+            counter = 0
+            state_class = {}
+            for Class in equivalence_classes:
+                for state in Class:
+                    state_class[state] = counter
+                counter += 1
+                
+            prev_equivalence_classes = copy.deepcopy(equivalence_classes)
+            next_equivalence_classes = []
+            for Class in equivalence_classes:
+                while Class:
+                    curr_state = Class.pop()
+                    next_class = {curr_state}
+                    for state in sorted(Class):
+                        flag = True
+                        for symbol in self.symbols:
+                            if state_class[self.transitions_table[state][symbol]] != state_class[self.transitions_table[curr_state][symbol]]:
+                                flag = False
+                                break
+                        if flag:
+                            next_class.add(state)
+                            Class.remove(state)
+                    next_equivalence_classes.append(next_class)
+            equivalence_classes = next_equivalence_classes
+    
+            if prev_equivalence_classes == next_equivalence_classes:
+                break  
+
+        new_transitions_table = {}
+        for class_from in equivalence_classes:
+            new_transitions_table[','.join(sorted(class_from))] = {}
+            for symbol in self.symbols:
+                state_to = self.transitions_table[list(class_from)[0]][symbol]
+                for class_to in equivalence_classes:
+                    if state_to in class_to:
+                        new_transitions_table[','.join(sorted(class_from))][symbol] = ','.join(sorted(class_to))
+                        break
+
+        new_dfa = self.copy()
+        new_dfa.transitions_table = copy.deepcopy(new_transitions_table)
+        new_dfa.states = sorted(new_transitions_table.keys())
+
+        for Class in equivalence_classes:
+            if new_dfa.start_state in Class:
+                new_dfa.start_state = ','.join(sorted(Class))
+                break
+        final_states_temp = set()
+        for Class in equivalence_classes:
+            for state in new_dfa.final_states:
+                if state in Class:
+                    final_states_temp.add(','.join(sorted(Class)))
+        new_dfa.final_states = copy.copy(final_states_temp)
+        new_dfa._shrink_states_names()
+
+        return new_dfa
 
     def _shrink_states_names(self) -> None:
         "Shrink DFA states names that formed from converting NFA to DFA or merging states"
