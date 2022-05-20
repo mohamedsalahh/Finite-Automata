@@ -1,5 +1,4 @@
 import copy
-from os import stat
 from typing import Tuple, TypeVar
 from AlgebraicExpressionParser import Expression
 from FiniteAutomata.exceptions.Exceptions import *
@@ -11,7 +10,12 @@ DFA = TypeVar('DFA')
 
 class DFA:
     def __init__(self, *, regex: str = None, nfa: NFA = None) -> None:
-
+        """
+        regex: the regex that would be converted into dfa
+        regex type: str
+        nfa: the nfa that would be converted into dfa
+        nfa type: NFA
+        """
         if nfa:
             self.nfa = nfa.copy()
         elif regex:
