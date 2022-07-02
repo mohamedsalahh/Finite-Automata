@@ -54,3 +54,48 @@ nfa.visualize(state_color='#B5B5B5', bgcolor='#0d1017', fontcolor='#B5B5B5', arr
 ```
 ![](https://github.com/mohamedsalahh/Finite-Automata/blob/main/nfa-graph1.png "NFA")
 
+## DFA
+#### Importing
+```python
+from FiniteAutomata import DFA
+```
+
+```python
+nfa = DFA('(1+0)*0')
+```
+
+```python
+print(dfa)
+```
+```text
+< Symbols: {'1', '0'}
+  States: ['0', '1', '2']
+  Transitions Table: {'2': {'0': '1', '1': '0'}, '1': {'0': '1', '1': '0'}, '0': {'0': '1', '1': '0'}}
+  Start State: 2
+  Final States: {'1'} >
+```
+
+```python
+print(dfa.check_string('10100'))
+```
+```text
+(True, '1')
+```
+
+```python
+print(dfa.check_string('101001'))
+```
+```text
+(False, '0')
+```
+
+```python
+dfa.visualize(state_color='#B5B5B5', bgcolor='#0d1017', fontcolor='#B5B5B5', arrow_color='#B5B5B5')
+```
+![](https://github.com/mohamedsalahh/Finite-Automata/blob/main/dfa-graph.png "DFA")
+
+```python
+states = set(dfa.check_string('10100')[1])
+dfa.visualize(state_color='#B5B5B5', bgcolor='#0d1017', fontcolor='#B5B5B5', arrow_color='#B5B5B5', subgroup_states=states, subgroup_color='#25282e')
+```
+![](https://github.com/mohamedsalahh/Finite-Automata/blob/main/dfa-graph1.png "DFA")
