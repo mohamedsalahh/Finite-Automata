@@ -22,7 +22,7 @@ class DFA:
             self.regex = regex
         else:
             raise DFAInvalidArgumentsException(
-                "DFA class should be given regex or NFA.")
+                "Input should be regex or NFA.")
 
     @property
     def nfa(self) -> NFA:
@@ -54,7 +54,13 @@ class DFA:
 
     def copy(self) -> DFA:
         """Create a deep copy of the DFA."""
-        return self.__class__(nfa = self.nfa)
+        new_dfa = self.__class__(nfa=self.nfa)
+        new_dfa.transitions_table = copy.deepcopy(self.transitions_table)
+        new_dfa.states = copy.copy(self.states)
+        new_dfa.final_states = copy.copy(self.final_states)
+        new_dfa.symbols = copy.copy(self.symbols)
+        new_dfa.start_state = self.start_state
+        return new_dfa
 
     def _convert_NFA_To_DFA(self) -> None:
         """Convert NFA transitions to DFA transitions"""
@@ -112,16 +118,17 @@ class DFA:
         """Minimize the DFA states using Hopcroft's algorithm"""
         equivalence_classes = []
         equivalence_classes.append(copy.copy(self.final_states))
-        equivalence_classes.append(set(self.states).difference(self.final_states))
+        equivalence_classes.append(
+            set(self.states).difference(self.final_states))
 
-        while True:    
+        while True:
             counter = 0
             state_class = {}
             for Class in equivalence_classes:
                 for state in Class:
                     state_class[state] = counter
                 counter += 1
-                
+
             prev_equivalence_classes = copy.deepcopy(equivalence_classes)
             next_equivalence_classes = []
             for Class in equivalence_classes:
@@ -139,9 +146,9 @@ class DFA:
                             Class.remove(state)
                     next_equivalence_classes.append(next_class)
             equivalence_classes = next_equivalence_classes
-    
+
             if prev_equivalence_classes == next_equivalence_classes:
-                break  
+                break
 
         new_transitions_table = {}
         for class_from in equivalence_classes:
@@ -150,7 +157,8 @@ class DFA:
                 state_to = self.transitions_table[list(class_from)[0]][symbol]
                 for class_to in equivalence_classes:
                     if state_to in class_to:
-                        new_transitions_table[','.join(sorted(class_from))][symbol] = ','.join(sorted(class_to))
+                        new_transitions_table[','.join(
+                            sorted(class_from))][symbol] = ','.join(sorted(class_to))
                         break
 
         new_dfa = self.copy()
@@ -190,7 +198,7 @@ class DFA:
             self.final_states.remove(state)
             self.final_states.add(mapping[state])
 
-    def check_input(self, input: str) -> Tuple[bool, str]:
+    def check_string(self, input: str) -> Tuple[bool, str]:
         """
         Return True if the input is accepted by the regex, and last state the input reaches.
         input: the string that will be checked, if it is accepted by the regex

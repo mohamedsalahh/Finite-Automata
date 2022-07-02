@@ -184,7 +184,7 @@ class NFA:
                     self.transitions_table[stack_top].setdefault('$', set()))
         return states
 
-    def check_input(self, input: str) -> Tuple[bool, set]:
+    def check_string(self, input: str) -> Tuple[bool, set]:
         """
         Return True if the input is accepted by the regex, and last states the input reaches
         input: the string that will be checked, if it is accepted by the regex
