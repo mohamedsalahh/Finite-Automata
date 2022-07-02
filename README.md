@@ -46,4 +46,4 @@ print(nfa.check_string('101001'))
 ```python
 nfa.visualize()
 ```
-![alt text](https://github.com/mohamedsalahh/Finite-Automata/blob/main/nfa-graph.png "NFA")
+![!](https://github.com/mohamedsalahh/Finite-Automata/blob/main/nfa-graph.png "NFA")
