@@ -47,3 +47,10 @@ print(nfa.check_string('101001'))
 nfa.visualize(state_color='#B5B5B5', bgcolor='#0d1017', fontcolor='#B5B5B5', arrow_color='#B5B5B5')
 ```
 ![](https://github.com/mohamedsalahh/Finite-Automata/blob/main/nfa-graph.png "NFA")
+
+```python
+states = nfa.check_string('10100')[1]
+nfa.visualize(state_color='#B5B5B5', bgcolor='#0d1017', fontcolor='#B5B5B5', arrow_color='#B5B5B5', subgroup_states=states, subgroup_color='#25282e')
+```
+![](https://github.com/mohamedsalahh/Finite-Automata/blob/main/nfa-graph1.png "NFA")
+
