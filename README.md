@@ -61,7 +61,7 @@ from FiniteAutomata import DFA
 ```
 
 ```python
-nfa = DFA('(1+0)*0')
+dfa = DFA(regex='(1+0)*0')
 ```
 
 ```python
