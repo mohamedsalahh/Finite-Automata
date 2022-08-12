@@ -1,5 +1,5 @@
 # Finite-Automata
-Finite state machine simultor that take a regular expression.
+Finite state machine simultor for regular expression.
 
 # Requirements
 - [Algebraic-Expression-Parser](https://github.com/mohamedsalahh/Algebraic-Expression-Parser)
